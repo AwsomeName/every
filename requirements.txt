@@ -1,0 +1,16 @@
+# api
+fastapi
+uvicorn
+
+# Qwen
+transformers==4.32.0
+accelerate
+tiktoken
+auto-gptq 
+# optimum
+
+# ASR
+
+# TTS
+
+# webui
