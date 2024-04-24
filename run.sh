@@ -1,2 +1,1 @@
-# install
-pip install -r requirements.txt --no-build-isolation
+python api/api.py 2>&1 >/dev/null &

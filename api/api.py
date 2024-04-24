@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Request
 import uvicorn, json
+from ..models.models import EVR_Models
 
 app = FastAPI()
 
-@app.post("/api/v2/vqa")
+@app.post("/api/v1/vqa")
 async def vqa(request: Request):
-    global rag
+    global evr_models
     json_post_raw = await request.json()
     json_post = json.dumps(json_post_raw)
     json_post_list = json.loads(json_post)
@@ -16,7 +17,5 @@ async def vqa(request: Request):
     return output_str
 
 if __name__ == '__main__':
-    # rag = RAGStringQueryEngine()
-    # dbs = DBSearch()
-    # asrE = ASREngine()
+    evr_models = EVR_Models()
     uvicorn.run(app, host='0.0.0.0', port=11073, workers=1)
