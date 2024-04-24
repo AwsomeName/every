@@ -12,7 +12,7 @@ async def vqa(request: Request):
     json_post_list = json.loads(json_post)
     input_str = json_post_list.get('input_str')
     file_path = json_post_list.get('file_path')
-    output_str = rag.vqa(file_path, input_str)
+    output_str = evr_models.vqa(file_path, input_str)
 
     return output_str
 

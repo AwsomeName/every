@@ -18,7 +18,8 @@ einops
 torch
 
 # ASR
-
+faster_whisper
+soundfile
 # TTS
 
 # webui
