@@ -21,6 +21,15 @@ torch
 faster_whisper
 soundfile
 # TTS
+# modelscope==1.10.0
+# datasets==2.18
+# pyttsx3
+# paddlepaddle==2.4.2
+# # pytest-runner
+# # urllib3==1.26.18
+# paddlespeech
+# numpy==1.19
+
 
 # webui
 streamlit
