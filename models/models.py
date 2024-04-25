@@ -1,9 +1,9 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
+# from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
 from faster_whisper import WhisperModel
 import torch
-import numpy as np
-import soundfile as sf
+# import numpy as np
+# import soundfile as sf
 torch.manual_seed(1234)
 
 
@@ -15,7 +15,7 @@ class EVR_Models():
         asr_model_path: str = "/home/lc/models/Systran/faster-whisper-large-v3",
         # tts_model_path: str = "/home/lc/models/",
         # spk_emb_path: str = "/home/lc/hf_dataset/Matthijs/cmu-arctic-xvectors/spkrec-xvect/cmu_us_rms_arctic-wav-arctic_b0088.npy",
-        faiss_demension:int = 521,
+        faiss_demension:int = 512,
     ) -> None:
         
         # speaker_embeddings = np.load(spk_emb_path)
