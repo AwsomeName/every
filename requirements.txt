@@ -20,6 +20,7 @@ torch
 # ASR
 faster_whisper
 soundfile
+
 # TTS
 # modelscope==1.10.0
 # datasets==2.18
@@ -33,3 +34,8 @@ soundfile
 
 # webui
 streamlit
+
+# agent
+# pip install "xinference[transformers,vllm]"
+langchain
+openai
