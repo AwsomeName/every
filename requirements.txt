@@ -3,8 +3,10 @@ fastapi
 uvicorn
 
 # Qwen
-transformers==4.32.0
-transformers_stream_generator==0.0.4
+transformers
+transformers_stream_generator
+# transformers==4.32.0
+# transformers_stream_generator==0.0.4
 accelerate
 tiktoken
 auto-gptq 

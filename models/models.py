@@ -41,6 +41,15 @@ class EVR_Models():
         print(response)
         return response, n_history
 
+    def chat(self, query_str, history=None):
+        # query = self.tokenizer.from_list_format([
+            # {'image': img_path},
+            # {'text': query_str},
+        # ])
+        response, n_history = self.v_model.chat(self.tokenizer, query=query_str, history=history)
+        print(response)
+        return response, n_history
+
     def draw_box_vqa(self, query_str, img_path, history):
         response, history = self.v_model.chat(self.tokenizer, '输出"击掌"的检测框', history=history)
         print(response)
