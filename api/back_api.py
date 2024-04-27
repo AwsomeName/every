@@ -21,9 +21,7 @@ history['100100101'] = {}
 history['100100101']['last_img'] = None
 history['100100101']['chat'] = None
 # evr_models = EVR_Models()
-# evr_models = EVR_Models(
-    # v_model_path = "/hy-tmp/Qwen-VL-Chat-Int4",
-    # asr_model_path = "/hy-tmp/faster-whisper-large-v3")
+
 
 # evr_models = None
 
@@ -83,7 +81,7 @@ async def upload_wav_file(wav_file: UploadFile):
     with open(save_path, "wb") as f:
         f.write(wav_file.file.read())
 
-    input_str = evr_models.asr(save_path)
+    input_str = evr_models.asr(save_path)['resp']
 
     last_img = history[uid]['last_img']
     if last_img is not None:
@@ -135,6 +133,9 @@ async def upload_img_file(img_file: UploadFile):
 
 if __name__ == '__main__':
     evr_models = EVR_Models()
+    # evr_models = EVR_Models(
+    # v_model_path = "/hy-tmp/Qwen-VL-Chat-Int4",
+    # asr_model_path = "/hy-tmp/faster-whisper-large-v3")
     # resp, his = evr_models.chat(query_str="您好，测试")
     # print("resp:", resp)
     # uvicorn.run("back_api:app", host='0.0.0.0', port=8081, workers=1)
