@@ -3,13 +3,8 @@ from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage
 
-# 修改为你自己配置的OPENAI_API_KEY
 api_key = "evllm"
-
-# 修改为你启动api-for-open-llm项目所在的服务地址和端口
 api_url = "http://localhost:8000/v1"
-
-# modal= "baichuan2-13b-chat"
 modal= "chatglm"
 llm = ChatOpenAI(model_name=modal,openai_api_key=api_key,openai_api_base=api_url)
 
