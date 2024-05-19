@@ -5,26 +5,20 @@
 from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.responses import FileResponse
 import uvicorn, json
-import time
-import sys
-sys.path.append("./")
-from models import EVR_Models
-# from ..models.models import EVR_Models
 
 app = FastAPI()
 
 # 维持一个公共的对话记录
-history = {}
-history['100100100'] = {}
-history['100100100']['last_img'] = None
-history['100100100']['chat'] = None
-history['100100101'] = {}
-history['100100101']['last_img'] = None
-history['100100101']['chat'] = None
-# evr_models = EVR_Models()
+users = {}
+# history['100100101']['chat'] = None
 
 
-# evr_models = None
+# 维持一个用户表。用户信息和装填
+# 发送验证码
+# 用户不存在，那么注册并登录。用户存在，那么登录
+# 用户注销
+# 用户退出
+
 
 @app.post("/api/v1/chat")
 async def chat(request: Request):

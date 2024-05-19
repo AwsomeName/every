@@ -5,6 +5,8 @@ import torch
 # import numpy as np
 # import soundfile as sf
 torch.manual_seed(1234)
+from http import HTTPStatus
+import dashscope
 
 
 class EVR_Models():
@@ -42,6 +44,30 @@ class EVR_Models():
         response, n_history = self.v_model.chat(self.tokenizer, query=query, history=history)
         print(response)
         return response, n_history
+
+    def vqa_r(self, query_str, img_path, history=None):
+        messages = [
+        {
+            "role": "user",
+            "content": [
+                # {"image": "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg"},
+                {"image": "/root/every/api/" + img_path},
+                {"text": query_str}
+            ]
+        }
+        ]
+        # response = dashscope.MultiModalConversation.call(model='qwen-vl-plus',
+        response = dashscope.MultiModalConversation.call(model='qwen-vl-max',
+                                                        messages=messages)
+
+        if response.status_code == HTTPStatus.OK:
+            # print(response)
+            return response["output"]['choices'][0]["message"]['content'][0]["text"], None
+        else:
+            print(response.code)  # 错误码
+            print(response.message)  # 错误信息
+            return response.code, None
+        
 
     def chat(self, query_str, history=None):
         # query = self.tokenizer.from_list_format([

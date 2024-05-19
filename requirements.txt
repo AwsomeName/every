@@ -3,6 +3,7 @@ fastapi
 uvicorn
 
 # Qwen
+dashscope
 transformers
 transformers_stream_generator
 # transformers==4.32.0
