@@ -150,7 +150,7 @@ async def down_file(request: Request):
     file_path = "/tmp/every/history/" + uid + "/img/" + date_str 
     return FileResponse(file_path)
 
-@app.get("/api/v1/user/create")
+@app.post("/api/v1/user/create")
 async def user_create(request: Request):
     global evr_db
     # print(evr_models)
@@ -163,7 +163,7 @@ async def user_create(request: Request):
     # file_path = "/tmp/every/history/" + uid + "/img/" + date_str 
     return evr_db.create_user(user_phone_num, user_name_uni)
 
-@app.get("/api/v1/user/delete")
+@app.post("/api/v1/user/delete")
 async def user_delete(request: Request):
     global evr_db
     json_post_raw = await request.json()
@@ -172,7 +172,7 @@ async def user_delete(request: Request):
     user_id = json_post_list.get('user_id')
     return evr_db.delete_user(user_id)
 
-@app.get("/api/v1/user/login")
+@app.post("/api/v1/user/login")
 async def user_login(request: Request):
     global evr_db
     json_post_raw = await request.json()
@@ -181,7 +181,7 @@ async def user_login(request: Request):
     user_id = json_post_list.get('user_id')
     return evr_db.user_login(user_id)
 
-@app.get("/api/v1/user/logout")
+@app.post("/api/v1/user/logout")
 async def user_logout(request: Request):
     global evr_db
     json_post_raw = await request.json()
@@ -190,7 +190,7 @@ async def user_logout(request: Request):
     user_id = json_post_list.get('user_id')
     return evr_db.user_logout(user_id)
 
-@app.get("/api/v1/chat/check_last_chat")
+@app.post("/api/v1/chat/check_last_chat")
 async def check_last_chat(request: Request):
     global evr_db
     json_post_raw = await request.json()
@@ -199,7 +199,7 @@ async def check_last_chat(request: Request):
     user_id = json_post_list.get('user_id')
     return evr_db.check_last_chat(user_id)
 
-@app.get("/api/v1/chat/add_chat_histroy")
+@app.post("/api/v1/chat/add_chat_histroy")
 async def add_chat_histroy(request: Request):
     global evr_db
     json_post_raw = await request.json()
