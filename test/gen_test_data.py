@@ -32,7 +32,7 @@ cnt = 0
 if True:
     for i in range(total):
         cnt += 1
-        if cnt >= 600:
+        if cnt >= 300:
             break
         if i % 2 == 0:
             it = True

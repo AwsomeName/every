@@ -1,0 +1,9 @@
+# api
+fastapi
+uvicorn
+
+
+dashscope
+
+langchain
+openai
