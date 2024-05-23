@@ -6,21 +6,22 @@ from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.responses import FileResponse
 import uvicorn, json
 import time
+# import pymysql
 import sys
+import os
 sys.path.append("./")
 from qwen_openai_api import EVR_Models
 
 
 app = FastAPI()
 
+
 # 维持一个公共的对话记录
 history = {}
 history['100100100'] = {}
 history['100100100']['last_img'] = None
-history['100100100']['chat'] = None
 history['100100101'] = {}
 history['100100101']['last_img'] = None
-history['100100101']['chat'] = None
 
 # history 初始化。读一个数据库，把所有用户初始化到内存。主要保存last_img的目录
 # 这里可能需要根据不同的运行环境，加载不同的数据库
