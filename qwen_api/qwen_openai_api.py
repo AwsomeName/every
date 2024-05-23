@@ -147,9 +147,9 @@ class EVR_Models():
                                 text=query_str,
                                 sample_rate=48000,
                                 format='wav')
-        file_path = ""
+        file_path = '/tmp/every/history/' + uid + '/wav/tmp_output.wav'
         if result.get_audio_data() is not None:
-            with open('tmp_output.wav', 'wb') as f:
+            with open(file_path, 'wb') as f:
                 f.write(result.get_audio_data())
         print('  get response: %s' % (result.get_response()))
         
