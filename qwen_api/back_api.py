@@ -11,7 +11,7 @@ import sys
 import os
 sys.path.append("./")
 from qwen_openai_api import EVR_Models
-
+from db import EVR_DB
 
 app = FastAPI()
 
@@ -150,10 +150,71 @@ async def down_file(request: Request):
     file_path = "/tmp/every/history/" + uid + "/img/" + date_str 
     return FileResponse(file_path)
 
+@app.get("/api/v1/user/create")
+async def user_create(request: Request):
+    global evr_db
+    # print(evr_models)
+    json_post_raw = await request.json()
+    json_post = json.dumps(json_post_raw)
+    json_post_list = json.loads(json_post)
+    user_phone_num = json_post_list.get('user_phone_num')
+    user_name_uni = json_post_list.get('user_name_uni')
+    # uid, date_str = file_name.split("@")
+    # file_path = "/tmp/every/history/" + uid + "/img/" + date_str 
+    return evr_db.create_user(user_phone_num, user_name_uni)
+
+@app.get("/api/v1/user/delete")
+async def user_delete(request: Request):
+    global evr_db
+    json_post_raw = await request.json()
+    json_post = json.dumps(json_post_raw)
+    json_post_list = json.loads(json_post)
+    user_id = json_post_list.get('user_id')
+    return evr_db.delete_user(user_id)
+
+@app.get("/api/v1/user/login")
+async def user_login(request: Request):
+    global evr_db
+    json_post_raw = await request.json()
+    json_post = json.dumps(json_post_raw)
+    json_post_list = json.loads(json_post)
+    user_id = json_post_list.get('user_id')
+    return evr_db.user_login(user_id)
+
+@app.get("/api/v1/user/logout")
+async def user_logout(request: Request):
+    global evr_db
+    json_post_raw = await request.json()
+    json_post = json.dumps(json_post_raw)
+    json_post_list = json.loads(json_post)
+    user_id = json_post_list.get('user_id')
+    return evr_db.user_logout(user_id)
+
+@app.get("/api/v1/chat/check_last_chat")
+async def check_last_chat(request: Request):
+    global evr_db
+    json_post_raw = await request.json()
+    json_post = json.dumps(json_post_raw)
+    json_post_list = json.loads(json_post)
+    user_id = json_post_list.get('user_id')
+    return evr_db.check_last_chat(user_id)
+
+@app.get("/api/v1/chat/add_chat_histroy")
+async def add_chat_histroy(request: Request):
+    global evr_db
+    json_post_raw = await request.json()
+    json_post = json.dumps(json_post_raw)
+    json_post_list = json.loads(json_post)
+    user_id = json_post_list.get('user_id')
+    img_path = json_post_list.get('img_path')
+    chat_content = json_post_list.get('chat_content')
+    return evr_db.add_chat_histroy(user_id, img_path, chat_content)
+
 
 
 if __name__ == '__main__':
     evr_models = EVR_Models()
+    evr_db = EVR_DB()
     # evr_models = EVR_Models(
     # v_model_path = "/hy-tmp/Qwen-VL-Chat-Int4",
     # asr_model_path = "/hy-tmp/faster-whisper-large-v3")
