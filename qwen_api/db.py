@@ -23,10 +23,10 @@ class EVR_DB():
             )
         elif run_env == "online":
             self.conn = pymysql.connect(
-                host="127.0.0.1",
+                host="rm-2zeg3tgyz6l15x8p3.mysql.rds.aliyuncs.com",
                 port=3306,
-                user="lc",
-                password="abc12345",
+                user="every",
+                password="every",
                 database="every",
                 charset="utf8"
             )
