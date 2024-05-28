@@ -216,8 +216,25 @@ class EVR_DB():
                     print(r)
                 return {"msg": "suc", "err": "", "infos": json.dumps(rows)}
 
+    def get_all_uid(self):
+        check_sql = "SELECT u_id_uni FROM users_base_infos_v1_1  WHERE is_del=0"
+        # try:
+        uids = []
+        if True:
+            with self.conn.cursor() as cursor:
+                rows = cursor.execute(check_sql)
+                # print("row:", rows)
+                res = cursor.fetchall()
+                # print("res:", res)
+                for r in res:
+                    # print("-------")
+                    # print(r[0])
+                    uids.append(r[0])
+                # return {"msg": "suc", "err": "", "infos": uids}
+                return uids
+
     def check_history(self):
-        check_sql = "SELECT * FROM user_aichat_history_v1_1"
+        check_sql = "SELECT  * FROM user_aichat_history_v1_1"
         # try:
         if True:
             with self.conn.cursor() as cursor:
@@ -229,9 +246,13 @@ class EVR_DB():
                     print(r)
                 return {"msg": "suc", "err": "", "infos": json.dumps(rows)}
             
+    
+            
 
 if __name__ == "__main__":
     db = EVR_DB()
+    print(db.get_all_uid())
+    exit()
     print(db.check_user())
     print("------======= create user")
     print(db.create_user("17611180092", "test11"))

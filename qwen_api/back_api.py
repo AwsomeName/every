@@ -25,6 +25,9 @@ history['100100101']['last_img'] = None
 
 # history 初始化。读一个数据库，把所有用户初始化到内存。主要保存last_img的目录
 # 这里可能需要根据不同的运行环境，加载不同的数据库
+# os.mkdir("/tmp/every/history/" + uid + "/", 775)
+# os.mkdir("/tmp/every/history/" + uid + "/img/", 775)
+# os.mkdir("/tmp/every/history/" + uid + "/wav/", 775)
 
 @app.post("/api/v1/chat")
 async def chat(request: Request):
@@ -251,6 +254,14 @@ async def add_chat_histroy(request: Request):
 if __name__ == '__main__':
     evr_models = EVR_Models()
     evr_db = EVR_DB()
+    users = evr_db.get_all_uid()
+    for uid in users:
+        uid = str(uid)
+        history[uid] = {}
+        history[uid]['last_img'] = None 
+        os.mkdir("/tmp/every/history/" + uid + "/", 775)
+        os.mkdir("/tmp/every/history/" + uid + "/img/", 775)
+        os.mkdir("/tmp/every/history/" + uid + "/wav/", 775)
     # evr_models = EVR_Models(
     # v_model_path = "/hy-tmp/Qwen-VL-Chat-Int4",
     # asr_model_path = "/hy-tmp/faster-whisper-large-v3")
