@@ -10,6 +10,7 @@ logging.basicConfig(filename="sql.log", level=logging.DEBUG)
 prices = {}
 prices['qwen-plus'] = 0.01
 prices['qwen-vl-plus'] = 0.01
+prices['qwen-vl-max'] = 0.01
 prices['qwen-tts'] = 0.01
 prices['audio_tts'] = 0.01
 prices['qwen-audio-chat'] = 0.01

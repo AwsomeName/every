@@ -101,6 +101,7 @@ async def upload_wav_file(wav_file: UploadFile):
         f.write(wav_file.file.read())
 
     input_str, used = evr_models.asr_r(save_path)
+    evr_db.add_used_record(user_id, used)
 
     last_img = history[uid]['last_img']
     if last_img is not None:
@@ -184,13 +185,13 @@ async def user_create(request: Request):
     # file_path = "/tmp/every/history/" + uid + "/img/" + date_str 
     return_info = evr_db.create_user(user_phone_num, user_name_uni)
     # 这里要更新一下文件夹
-    if return_info['msy'] == "suc":
-        uid = return_info['u_id_uni']
+    if return_info['msg'] == "suc":
+        uid = str(return_info['u_id_uni'])
         history[uid] = {}
         history[uid]['last_img'] = None
-        os.mkdir("/tmp/every/history/" + uid + "/", "0775")
-        os.mkdir("/tmp/every/history/" + uid + "/img/", "0775")
-        os.mkdir("/tmp/every/history/" + uid + "/wav/", "0775")
+        os.mkdir("/tmp/every/history/" + uid + "/", 775)
+        os.mkdir("/tmp/every/history/" + uid + "/img/", 775)
+        os.mkdir("/tmp/every/history/" + uid + "/wav/", 775)
 
     else:
         pass
