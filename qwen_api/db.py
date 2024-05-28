@@ -33,7 +33,7 @@ class EVR_DB():
                 host="rm-2zeg3tgyz6l15x8p3.mysql.rds.aliyuncs.com",
                 port=3306,
                 user="every",
-                password="every",
+                password="e",
                 database="every",
                 charset="utf8"
             )
@@ -82,7 +82,7 @@ class EVR_DB():
             # logging.debug(log_str)
             return {"msg": "failed", "err": "same_name"}
 
-        return {"msg": "suc", "err": ""}
+        return {"msg": "suc", "err": "", "u_id_uni": u_id_uni}
     
     def delete_user(self, user_id):
         sql = "UPDATE users_base_infos_v1_1 SET is_del=1 WHERE u_id_uni=" + user_id
@@ -164,12 +164,15 @@ class EVR_DB():
         price = prices[model]
         total_used = price * tok_used
         data.append(total_used)
-        try:
+        # try:
+        if True:
             with self.conn.cursor() as cursor:
+                print("add:", data)
+                print("add:", sql)
                 rows = cursor.execute(sql, data)
             self.conn.commit()
 
-        except pymysql.MySQLError as err:
+        # except pymysql.MySQLError as err:
             self.conn.rollback()
             # print(type(err), err)
             log_str = "insert failed " + ",".join([str(d) for d in data])
@@ -186,6 +189,20 @@ class EVR_DB():
     
     def check_user(self):
         check_sql = "SELECT * FROM users_base_infos_v1_1"
+        # try:
+        if True:
+            with self.conn.cursor() as cursor:
+                rows = cursor.execute(check_sql)
+                print("row:", rows)
+                res = cursor.fetchall()
+                print("res:", res)
+                for r in res:
+                    print("-------")
+                    print(r)
+                return {"msg": "suc", "err": "", "infos": json.dumps(rows)}
+
+    def check_user_used(self):
+        check_sql = "SELECT * FROM user_token_used_v1_1"
         # try:
         if True:
             with self.conn.cursor() as cursor:
@@ -230,3 +247,6 @@ if __name__ == "__main__":
     print(db.add_chat_histroy("100100101", img_path = "", chat_content = json.dumps(chat)))
     print(db.check_last_chat("100100101"))
     
+    print("------add used")
+    print(db.add_used_record("100100101", {'model': 'qwen-plus', 'token_used': 136}))
+    print(db.check_user_used())

@@ -29,6 +29,7 @@ history['100100101']['last_img'] = None
 @app.post("/api/v1/chat")
 async def chat(request: Request):
     global evr_models
+    global evr_db
     print(evr_models)
     json_post_raw = await request.json()
     json_post = json.dumps(json_post_raw)
@@ -52,17 +53,26 @@ async def chat(request: Request):
             img_path = last_img['file_path']
             try:
                 resp, used = evr_models.vqa_r(query_str=input_str, img_path=img_path)
+                evr_db.add_chat_histroy(user_id, img_path=img_path, chat_content=json.dumps({"role":"user", "content": input_str}))
+                evr_db.add_chat_histroy(user_id, img_path=img_path, chat_content=json.dumps({"role":"ai", "content": resp}))
+                evr_db.add_used_record(user_id, used)
                 history[user_id]['last_img'] = None
             except:
                 return {"msg": "err_img", "return_info": ""}
         else:
             resp, used = evr_models.chat(query_str=input_str)
-            
+            evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"user", "content": input_str}))
+            evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"ai", "content": resp}))
+            evr_db.add_used_record(user_id, used)
     else:
         # global evr_models
         resp, used = evr_models.chat_qwen_openai(query_str=input_str)
+        evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"user", "content": input_str}))
+        evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"ai", "content": resp}))
+        evr_db.add_used_record(user_id, used)
         
     # 保存结果，并返回， 保存使用量
+
     
     
     return {"msg": "suc", "return_info": resp}
@@ -74,6 +84,7 @@ async def upload_wav_file(wav_file: UploadFile):
     # 调用ASR
     # 调用本地模型
     global evr_models
+    global evr_db
     print("file:", wav_file)
     file_name = wav_file.filename
     try:
@@ -82,6 +93,7 @@ async def upload_wav_file(wav_file: UploadFile):
             return {"msg": "err file_name"}
     except:
         return {"msg": "err file_name", "return_info": ""}
+    user_id = uid
     
     save_path = "/tmp/every/history/" + uid + "/wav/" + date_str
     # wav_file.write(save_path)
@@ -99,15 +111,24 @@ async def upload_wav_file(wav_file: UploadFile):
             img_path = last_img['file_path']
             try:
                 resp, used = evr_models.vqa_r(query_str=input_str, img_path=img_path)
+                evr_db.add_chat_histroy(user_id, img_path=img_path, chat_content=json.dumps({"role":"user", "content": input_str}))
+                evr_db.add_chat_histroy(user_id, img_path=img_path, chat_content=json.dumps({"role":"ai", "content": resp}))
+                evr_db.add_used_record(user_id, used)
                 history[uid]['last_img'] = None
             except:
                 return {"msg": "err_img", "return_info": ""}
                 
         else:
             resp, used = evr_models.chat_qwen_openai(query_str=input_str)
+            evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"user", "content": input_str}))
+            evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"ai", "content": resp}))
+            evr_db.add_used_record(user_id, used)
             
     else:
         resp, used = evr_models.chat_qwen_openai(query_str=input_str)
+        evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"user", "content": input_str}))
+        evr_db.add_chat_histroy(user_id, img_path="", chat_content=json.dumps({"role":"ai", "content": resp}))
+        evr_db.add_used_record(user_id, used)
 
     return {"msg": "suc", "return_info": resp}
 
@@ -161,7 +182,21 @@ async def user_create(request: Request):
     user_name_uni = json_post_list.get('user_name_uni')
     # uid, date_str = file_name.split("@")
     # file_path = "/tmp/every/history/" + uid + "/img/" + date_str 
-    return evr_db.create_user(user_phone_num, user_name_uni)
+    return_info = evr_db.create_user(user_phone_num, user_name_uni)
+    # 这里要更新一下文件夹
+    if return_info['msy'] == "suc":
+        uid = return_info['u_id_uni']
+        history[uid] = {}
+        history[uid]['last_img'] = None
+        os.mkdir("/tmp/every/history/" + uid + "/", "0775")
+        os.mkdir("/tmp/every/history/" + uid + "/img/", "0775")
+        os.mkdir("/tmp/every/history/" + uid + "/wav/", "0775")
+
+    else:
+        pass
+
+    return return_info
+
 
 @app.post("/api/v1/user/delete")
 async def user_delete(request: Request):
