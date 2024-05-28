@@ -32,11 +32,11 @@ class EVR_Models():
             # print(response)
             used = response['usage']
             token_used = used['input_tokens'] + used['output_tokens'] + used['image_tokens']
-            return response["output"]['choices'][0]["message"]['content'][0]["text"], token_used
+            return response["output"]['choices'][0]["message"]['content'][0]["text"], {"model": "qwen-vl-max", "token_used": token_used} 
         else:
             print(response.code)  # 错误码
             print(response.message)  # 错误信息
-            return response.code, None
+            return response.code, {"model": "qwen-vl-max", "token_used": token_used} 
 
     def vqa_open_ai(self, query_str, img_url, history=None):
         client = OpenAI(
@@ -112,7 +112,7 @@ class EVR_Models():
         # print(completion)
         # used = completion.usage
         res = completion.choices[0].message.content
-        return res, completion.usage.total_tokens
+        return res, {"model": "qwen-plus", "token_used": completion.usage.total_tokens}
             
     def asr_r(self, file_path):
         messages = [{
@@ -138,7 +138,7 @@ class EVR_Models():
             token_used = used_info['input_tokens'] + used_info['output_tokens'] + used_info['audio_tokens']
         else:
             response_txt = ""
-        return response_txt, token_used
+        return response_txt, {"model": "qwen-audio-chat", "token_used": token_used}
 
     def tts_r(self, query_str, uid):
         dashscope.api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -148,23 +148,24 @@ class EVR_Models():
                                 sample_rate=48000,
                                 format='wav')
         file_path = '/tmp/every/history/' + uid + '/wav/tmp_output.wav'
+        print(result)
         if result.get_audio_data() is not None:
             with open(file_path, 'wb') as f:
                 f.write(result.get_audio_data())
         print('  get response: %s' % (result.get_response()))
-        
-        return file_path
+        token_used = result.get_response()['usage']['characters']
+        return file_path, {"model": "audio_tts", "token_used": token_used}
 
 if __name__ == "__main__":
     file_path = "/home/lc/data/radio/yuanshen_zh/雷电将军/sr16000/997ee8950033ce78a1e1204cef725d51226_145647756923704119.mp3"
     EVR = EVR_Models()
     # print(EVR.asr_r(file_path))
-    print(EVR.tts_r("今天天气非常好啊！", "100100100"))
+    # print(EVR.tts_r("今天天气非常好啊！", "100100100"))
     # img_path = 'https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg'
-    # img_path = "/home/lc/code/every/api/100100100@2024-04-29_20:00:00.png"
+    img_path = "/home/lc/code/every/api/100100100@2024-04-29_20:00:00.png"
     # img_url = "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg"
     # print(EVR.vqa_open_ai("这是什么", img_url=img_url))
     # print(EVR.vqa_r("这是什么", img_path=img_path))
-    # print(EVR.chat_qwen_openai("可以介绍一下你自己吗"))
+    print(EVR.chat_qwen_openai("可以介绍一下你自己吗"))
     # EVR.tts("今天天气挺好的")
     

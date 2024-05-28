@@ -7,6 +7,13 @@ import json
 format = "%Y-%m-%d"
 run_env = os.getenv("EVERY_ENV")
 logging.basicConfig(filename="sql.log", level=logging.DEBUG)
+prices = {}
+prices['qwen-plus'] = 0.01
+prices['qwen-vl-plus'] = 0.01
+prices['qwen-tts'] = 0.01
+prices['audio_tts'] = 0.01
+prices['qwen-audio-chat'] = 0.01
+
 
 class EVR_DB():
     def __init__(
@@ -32,15 +39,15 @@ class EVR_DB():
             )
             
     def create_user(self, user_phone_num, user_name_uni, user_img_url=""):
-        sql = "insert into users_base_infos \
-    (is_del, u_id_uni, u_phone_num, u_name_uni, u_img_url, if_login) \
-    values(%r, %s, %s, %s, %s, %r);"
+        sql = "insert into users_base_infos_v1_1 \
+    (is_del, u_id_uni, u_phone_num, u_name_uni, u_img_url, if_login, u_remain) \
+    values(%r, %s, %s, %s, %s, %r, %s);"
         data = []
         data.append(0)
         u_id_uni = ""
         try:
             # check_sql = "SELECT count(*) FROM users_base_infos;"
-            check_sql = "SELECT count(*) FROM users_base_infos;"
+            check_sql = "SELECT count(*) FROM users_base_infos_v1_1;"
             with self.conn.cursor() as cursor:
                 row = cursor.execute(check_sql)
                 print("row:", row)
@@ -58,9 +65,12 @@ class EVR_DB():
         data.append(user_name_uni)
         data.append(user_img_url)
         data.append(1)
+        data.append(99.99)
         
         try:
             with self.conn.cursor() as cursor:
+                # print("sql:", sql)
+                # print("data:", data)
                 row = cursor.execute(sql, data)
             self.conn.commit()
 
@@ -75,7 +85,7 @@ class EVR_DB():
         return {"msg": "suc", "err": ""}
     
     def delete_user(self, user_id):
-        sql = "UPDATE users_base_infos SET is_del=0 WHERE u_id_uni=" + user_id
+        sql = "UPDATE users_base_infos_v1_1 SET is_del=1 WHERE u_id_uni=" + user_id
         try:
             with self.conn.cursor() as cursor:
                 row = cursor.execute(sql)
@@ -86,7 +96,7 @@ class EVR_DB():
         return {"msg": "suc", "err": "see u later"}
     
     def user_login(self, user_id):
-        sql = "UPDATE users_base_infos SET if_login=1 WHERE u_id_uni=" + user_id
+        sql = "UPDATE users_base_infos_v1_1 SET if_login=1 WHERE u_id_uni=" + user_id
         try:
             with self.conn.cursor() as cursor:
                 row = cursor.execute(sql)
@@ -97,7 +107,7 @@ class EVR_DB():
         return {"msg": "suc", "err": ""}
     
     def user_logout(self, user_id):
-        sql = "UPDATE users_base_infos SET if_login=0 WHERE u_id_uni=" + user_id
+        sql = "UPDATE users_base_infos_v1_1 SET if_login=0 WHERE u_id_uni=" + user_id
         try:
             with self.conn.cursor() as cursor:
                 row = cursor.execute(sql)
@@ -109,7 +119,7 @@ class EVR_DB():
     
     
     def check_last_chat(self, user_id):
-        check_sql = "SELECT * FROM user_aichat_history_v01 WHERE u_id_uni=" + user_id + " ORDER by create_time desc LIMIT 5"
+        check_sql = "SELECT * FROM user_aichat_history_v1_1 WHERE u_id_uni=" + user_id + " ORDER by create_time desc LIMIT 5"
         try:
             with self.conn.cursor() as cursor:
                 rows = cursor.execute(check_sql)
@@ -120,7 +130,7 @@ class EVR_DB():
             return {"msg": "failed", "err": "retry later..."} 
     
     def add_chat_histroy(self, user_id, img_path, chat_content):
-        sql = "insert into user_aichat_history_v01 \
+        sql = "insert into user_aichat_history_v1_1 \
             (u_id_uni, u_img_path, u_chat_history) \
             values(%s, %s, %s);"
         data = []
@@ -142,13 +152,40 @@ class EVR_DB():
 
         return {"msg": "suc", "err": ""}
 
+    def add_used_record(self, user_id, used):
+        sql = "insert into user_token_used_v1_1 \
+            (u_id_uni, u_token_used, u_rmb_used) \
+            values(%s, %s, %s);"
+        data = []
+        data.append(user_id)
+        data.append(json.dumps(used))
+        model = used['model']
+        tok_used = used['token_used']
+        price = prices[model]
+        total_used = price * tok_used
+        data.append(total_used)
+        try:
+            with self.conn.cursor() as cursor:
+                rows = cursor.execute(sql, data)
+            self.conn.commit()
+
+        except pymysql.MySQLError as err:
+            self.conn.rollback()
+            # print(type(err), err)
+            log_str = "insert failed " + ",".join([str(d) for d in data])
+            logging.info(log_str)
+            # logging.debug(log_str)
+            return {"msg": "failed", "err": "add err"}
+
+        return {"msg": "suc", "err": ""}
+
     
     def delete_chat_history(self):
         # 定时删除历史对话
         pass
     
     def check_user(self):
-        check_sql = "SELECT * FROM users_base_infos"
+        check_sql = "SELECT * FROM users_base_infos_v1_1"
         # try:
         if True:
             with self.conn.cursor() as cursor:
@@ -157,11 +194,12 @@ class EVR_DB():
                 res = cursor.fetchall()
                 print("res:", res)
                 for r in res:
+                    print("-------")
                     print(r)
                 return {"msg": "suc", "err": "", "infos": json.dumps(rows)}
 
     def check_history(self):
-        check_sql = "SELECT * FROM user_aichat_history_v01"
+        check_sql = "SELECT * FROM user_aichat_history_v1_1"
         # try:
         if True:
             with self.conn.cursor() as cursor:
@@ -177,16 +215,16 @@ class EVR_DB():
 if __name__ == "__main__":
     db = EVR_DB()
     print(db.check_user())
-    print("------")
+    print("------======= create user")
     print(db.create_user("17611180092", "test11"))
     print(db.create_user("17611180092", "test2"))
     print(db.create_user("17611180092", "test3"))
     print(db.create_user("17611180092", "test4"))
-    print("------")
+    print("------ delete user")
     print(db.delete_user('100100105'))
     print(db.user_login('100100101'))
     print(db.user_logout('100100101'))
-    print("------")
+    print("------check history")
     print(db.check_history())
     chat = {"role": "user", "content": "你好"}
     print(db.add_chat_histroy("100100101", img_path = "", chat_content = json.dumps(chat)))
