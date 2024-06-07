@@ -259,9 +259,11 @@ if __name__ == '__main__':
         uid = str(uid)
         history[uid] = {}
         history[uid]['last_img'] = None 
-        os.mkdir("/tmp/every/history/" + uid + "/", 775)
-        os.mkdir("/tmp/every/history/" + uid + "/img/", 775)
-        os.mkdir("/tmp/every/history/" + uid + "/wav/", 775)
+        fpath = "/tmp/every/history/" + uid + "/"
+        if not os.path.exists(fpath):
+            os.mkdir("/tmp/every/history/" + uid + "/", 775)
+            os.mkdir("/tmp/every/history/" + uid + "/img/", 775)
+            os.mkdir("/tmp/every/history/" + uid + "/wav/", 775)
     # evr_models = EVR_Models(
     # v_model_path = "/hy-tmp/Qwen-VL-Chat-Int4",
     # asr_model_path = "/hy-tmp/faster-whisper-large-v3")
